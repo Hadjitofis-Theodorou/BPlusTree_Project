@@ -98,29 +98,63 @@ int bplus_close_file(const int file_desc, BPlusMeta *metadata)
 
 int bplus_record_insert(const int file_desc, BPlusMeta *metadata, const Record *record)
 {
+
+
+  //άδειο δέντρο
+  if(metadata->root==-1){
+    BF_Block* block;
+    BF_Block_Init(&block);
+    CALL_BF(BF_AllocateBlock(file_desc,block));
+
+    int block_count;
+    CALL_BF(BF_GetBlockCounter(file_desc,&block_count));
+    int new_node_id=block_count-1;
+
+    void *data=BF_Block_GetData(&block);
+    datanode_init(data);
+    insert_record_in_node(data, record, &metadata->schema);
+
+    metadata->root=new_node_id;
+    metadata->height=1;
+    BF_Block_SetDirty(block);
+    CALL_BF(BF_UnpinBlock(block));
+    BF_Block_Destroy(&block);
+
+    return 0;
+  }
+
+  
+  //βρίσκω το σωστο block/node
+  int correct_node_id;
+  int key=record_get_key(&metadata->schema,record);
+  if(find_correct_node(metadata,file_desc,key,correct_node_id)!=0){
+    return -1;
+  }
+
   BF_Block* block;
   BF_Block_Init(&block);
-
-  if (metadata->root==-1){
-    
-    CALL_BF(BF_AllocateBlock(file_desc,block));
-    int block_id=0;
-    CALL_BF(BF_GetBlockCounter);
-    int new_block_id=0;
-
-
-    void *data_ptr=BF_Block_GetData(block);
-    BPlusDataNode *leaf= (BPlusDataNode*) data_ptr;
-    datanode_init(leaf);
-
-
-
+  CALL_BF(BF_GetBlock(file_desc,correct_node_id,block));
+  void *data= BF_Block_GetData(block);
+  
+  
+  if(!((BPlusDataNode*)data)->is_leaf){
+     CALL_BF(BF_UnpinBlock(block));
+      BF_Block_Destroy(&block);
+      return -1;
   }
-  
-  
+
+  //αν έχουμε χώρο
+  if (((BPlusDataNode *)data)->num_keys< MAX_DATA_KEYS){
+    insert_record_in_node(data, record, &metadata->schema);
+    BF_Block_SetDirty(block);
+    CALL_BF(BF_UnpinBlock(block));
+    BF_Block_Destroy(&block);
+    return 0;
+  }
+
+  //αν δεν εχουμε χώρο
 
 
-  return -1;
 }
 
 int bplus_record_find(const int file_desc, const BPlusMeta *metadata, const int key, Record **out_record)
