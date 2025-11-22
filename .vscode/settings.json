@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "bplus_file_funcs.h": "c"
+        "bplus_file_funcs.h": "c",
+        "bplus_datanode.h": "c"
     }
 }
