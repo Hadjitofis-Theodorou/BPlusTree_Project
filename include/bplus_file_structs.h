@@ -11,6 +11,15 @@
 #include "bplus_file_structs.h"
 
 typedef struct {
+    int file_type;
+    int root;
+    int height;
+    int block_type;
+    int point_max;
+    int key_max;
+
+    TableSchema schema;
+
 } BPlusMeta;
 
 #endif //BPLUS_BPLUS_FILE_STRUCTS_H
