@@ -18,6 +18,11 @@ int datanode_insert_record(BPlusDataNode *node, const Record *record, int max_ke
 
     int key= record->values->int_value;
     int insert_position=0;
+    for (int i = 0; i < node->num_keys; i++) {
+    if (node->record[i].values->int_value == key) {
+        return -2;  // Duplicate key error
+    }
+    }
     while (insert_position< node->num_keys&& node->record[insert_position].values->int_value < key) {
         insert_position++;
     }
