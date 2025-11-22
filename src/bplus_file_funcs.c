@@ -31,9 +31,6 @@ int bplus_create_file(const TableSchema *schema, const char *fileName)
   meta.file_type=2004; // αριθμός για b+ trees
   meta.root=-1;
   meta.height=0;
-  meta.key_max=2;
-  meta.point_max=3;
-  meta.block_type=0; //0=ευρετηρίου, 1= δεδομένων
   meta.schema = *schema;
 
   void *data_ptr=BF_Block_GetData(block);

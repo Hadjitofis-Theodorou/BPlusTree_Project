@@ -1,22 +1,25 @@
 #ifndef BP_DATANODE_H
 #define BP_DATANODE_H
 #include "record.h"
+#include "bplus_file_structs.h"
+#define MAX_DATA_KEYS 2
 /* Στο αντίστοιχο αρχείο .h μπορείτε να δηλώσετε τις συναρτήσεις
  * και τις δομές δεδομένων που σχετίζονται με τους Κόμβους Δεδομένων.*/
 
 typedef struct BPlusDataNode{
     int is_leaf;
     int num_keys;
-    int next_block;
-    Record record[2];
+    int parent;
+    int next_leaf;
+    Record record[MAX_DATA_KEYS]; //κάθε μπλοκ χωράει 2 εγγραφές
 }BPlusDataNode;
 
-void datanode_init(BPlusDataNode *node);
+//αρχικοποιήση ενός datanode
+void datanode_init(BPlusDataNode* node);
 
-int datanode_insert_record(BPlusDataNode *node, Record *record, int max_keys);
+//έυρεση του σώστού block/node για την εισαγωγή
+int find_correct_node(BPlusMeta* metadata, int fd, int key,int *node_block_id);
 
-int datanode_search( BPlusDataNode *node, int key);
-
-void datanode_split(BPlusDataNode *left, BPlusDataNode *right, int *middle_key,Record *new_record, int max_keys);
-
+// εισαγωγή σε node που έχει χώρο
+void insert_record_in_node(BPlusDataNode* node, Record *record, TableSchema* schema);
 #endif

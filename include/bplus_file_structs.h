@@ -14,10 +14,6 @@ typedef struct {
     int file_type;
     int root;
     int height;
-    int block_type;
-    int point_max;
-    int key_max;
-
     TableSchema schema;
 
 } BPlusMeta;
