@@ -1,6 +1,4 @@
-#include "bplus_file_funcs.h"
-#include "bplus_datanode.h"
-#include "bplus_index_node.h"
+#include "../include/bplus_file_funcs.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -110,9 +108,9 @@ int bplus_record_insert(const int file_desc, BPlusMeta *metadata, const Record *
     CALL_BF(BF_GetBlockCounter(file_desc,&block_count));
     int new_node_id=block_count-1;
 
-    void *data=BF_Block_GetData(&block);
+    void *data=BF_Block_GetData(block);
     datanode_init(data);
-    insert_record_in_node(data, record, &metadata->schema);
+    insert_record_in_node(data, (Record*)record, &metadata->schema);
 
     metadata->root=new_node_id;
     metadata->height=1;
@@ -127,7 +125,7 @@ int bplus_record_insert(const int file_desc, BPlusMeta *metadata, const Record *
   //βρίσκω το σωστο block/node
   int correct_node_id;
   int key=record_get_key(&metadata->schema,record);
-  if(find_correct_node(metadata,file_desc,key,correct_node_id)!=0){
+  if(find_correct_node(metadata,file_desc,key,&correct_node_id)!=0){
     return -1;
   }
 
@@ -145,7 +143,7 @@ int bplus_record_insert(const int file_desc, BPlusMeta *metadata, const Record *
 
   //αν έχουμε χώρο
   if (((BPlusDataNode *)data)->num_keys< MAX_DATA_KEYS){
-    insert_record_in_node(data, record, &metadata->schema);
+    insert_record_in_node(data, (Record*) record, &metadata->schema);
     BF_Block_SetDirty(block);
     CALL_BF(BF_UnpinBlock(block));
     BF_Block_Destroy(&block);
@@ -153,7 +151,7 @@ int bplus_record_insert(const int file_desc, BPlusMeta *metadata, const Record *
   }
 
   //αν δεν εχουμε χώρο
-
+  return 0;
 
 }
 

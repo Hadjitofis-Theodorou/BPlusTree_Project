@@ -15,4 +15,5 @@ typedef struct BPlusIndexNode {
 }BPlusIndexNode;
 
 void indexnode_init(BPlusIndexNode* node);
+int choose_child(BPlusIndexNode* node, int key);
 #endif

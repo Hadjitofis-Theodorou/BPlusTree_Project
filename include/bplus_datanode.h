@@ -2,6 +2,7 @@
 #define BP_DATANODE_H
 #include "record.h"
 #include "bplus_file_structs.h"
+
 #define MAX_DATA_KEYS 2
 /* Στο αντίστοιχο αρχείο .h μπορείτε να δηλώσετε τις συναρτήσεις
  * και τις δομές δεδομένων που σχετίζονται με τους Κόμβους Δεδομένων.*/
@@ -14,7 +15,8 @@ typedef struct BPlusDataNode{
     Record record[MAX_DATA_KEYS]; //κάθε μπλοκ χωράει 2 εγγραφές
 }BPlusDataNode;
 
-//αρχικοποιήση ενός datanode
+
+//αρχικοποιήση ενός datanode    
 void datanode_init(BPlusDataNode* node);
 
 //έυρεση του σώστού block/node για την εισαγωγή

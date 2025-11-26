@@ -5,18 +5,18 @@
 #ifndef BPLUS_BPLUS_FILE_STRUCTS_H
 #define BPLUS_BPLUS_FILE_STRUCTS_H
 #include "bf.h"
-#include "bplus_datanode.h"
+//#include "bplus_datanode.h"
 #include "bplus_index_node.h"
 #include "record.h"
 #include "bplus_file_structs.h"
 
-typedef struct {
+typedef struct BPlusMeta {
     int file_type;
     int root;
     int height;
     TableSchema schema;
 
-} BPlusMeta;
+}BPlusMeta;
 
 #endif //BPLUS_BPLUS_FILE_STRUCTS_H
 

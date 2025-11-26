@@ -1,6 +1,16 @@
 // Μπορείτε να προσθέσετε εδώ βοηθητικές συναρτήσεις για την επεξεργασία Κόμβων toy Ευρετηρίου.
 #include "../include/bplus_datanode.h"
-
+#include "../include/bplus_file_structs.h"
+#define CALL_BF(call)         \
+  {                           \
+    BF_ErrorCode code = call; \
+    if (code != BF_OK)        \
+    {                         \
+      BF_PrintError(code);    \
+      return -1;              \
+    }                         \
+  }
+// WHATS GOING ON??????--->bplus_ERROR
 
 
 void datanode_init(BPlusDataNode* node){
