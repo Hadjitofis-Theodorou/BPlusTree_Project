@@ -75,7 +75,7 @@ void insert_record_in_node(BPlusDataNode *node, Record *record, TableSchema *sch
     node->num_keys++;
 }
 
-int split_datanode(int file_desc, BPlusMeta *metadata, int old_node_id, const Record *record)
+int split_datanode(int file_desc, BPlusMeta *metadata, int old_node_id, const Record *record, int *split_key)
 {
     BF_Block *new_block,*block;
     int key=record_get_key(&metadata->schema,record);
@@ -141,6 +141,6 @@ int split_datanode(int file_desc, BPlusMeta *metadata, int old_node_id, const Re
     BF_Block_Destroy(&block);
     BF_Block_Destroy(&new_block);
 
-    int split_key = record_get_key(&metadata->schema, &new_data->record[0]);
-    return split_key;
+    *split_key = record_get_key(&metadata->schema, &new_data->record[0]);
+    return new_block_id;
 }

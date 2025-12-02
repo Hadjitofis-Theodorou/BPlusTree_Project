@@ -26,5 +26,8 @@ int find_correct_node(BPlusMeta* metadata, int fd, int key,int *node_block_id);
 // εισαγωγή σε node που έχει χώρο
 void insert_record_in_node(BPlusDataNode* node, Record *record, TableSchema* schema);
 
-int split_datanode(int file_desc, BPlusMeta * metadata, int old_node_id, const Record *records);
+//επιστρέφει το id του νέου μπλοκ δεδομένων και το key που θα γίνει το split ή -1 αν το key υπάρχει ήδη
+int split_datanode(int file_desc, BPlusMeta * metadata, int old_node_id, const Record *records, int *split_key);
+
+int get_parent(int file_desc, int child_id);
 #endif

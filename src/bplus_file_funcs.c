@@ -151,8 +151,9 @@ int bplus_record_insert(const int file_desc, BPlusMeta *metadata, const Record *
   }
 
   // αν δεν εχουμε χώρο
-  int res=split_datanode(file_desc, metadata,correct_node_id, record );
-  if(res=-1){
+  int *split_key=NULL;
+  int new_block_id=split_datanode(file_desc, metadata,correct_node_id, record,&split_key);
+  if(new_block_id==-1){
     printf("Existing record id\n");
     return 0;
   }
