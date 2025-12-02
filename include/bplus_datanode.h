@@ -3,7 +3,8 @@
 #include "record.h"
 #include "bplus_file_structs.h"
 
-#define MAX_DATA_KEYS 2
+#define PTR_SIZE sizeof(int)
+#define MAX_DATA_KEYS ((BF_BLOCK_SIZE - sizeof(int)) / sizeof(Record))
 /* Στο αντίστοιχο αρχείο .h μπορείτε να δηλώσετε τις συναρτήσεις
  * και τις δομές δεδομένων που σχετίζονται με τους Κόμβους Δεδομένων.*/
 
@@ -12,7 +13,7 @@ typedef struct BPlusDataNode{
     int num_keys;
     int parent;
     int next_leaf;
-    Record record[MAX_DATA_KEYS]; //κάθε μπλοκ χωράει 2 εγγραφές
+    Record record[MAX_DATA_KEYS]; 
 }BPlusDataNode;
 
 
@@ -24,4 +25,6 @@ int find_correct_node(BPlusMeta* metadata, int fd, int key,int *node_block_id);
 
 // εισαγωγή σε node που έχει χώρο
 void insert_record_in_node(BPlusDataNode* node, Record *record, TableSchema* schema);
+
+int split_datanode(int file_desc, BPlusMeta * metadata, int old_node_id, const Record *records);
 #endif

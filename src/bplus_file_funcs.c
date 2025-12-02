@@ -105,7 +105,7 @@ int bplus_record_insert(const int file_desc, BPlusMeta *metadata, const Record *
 
     int block_count;
     CALL_BF(BF_GetBlockCounter(file_desc, &block_count));
-    int new_node_id = block_count - 1;
+    int new_node_id= block_count -1;
 
     void *data = BF_Block_GetData(block);
     datanode_init(data);
@@ -141,7 +141,7 @@ int bplus_record_insert(const int file_desc, BPlusMeta *metadata, const Record *
   }
 
   // αν έχουμε χώρο
-  if (((BPlusDataNode *)data)->num_keys < MAX_DATA_KEYS)
+  if (((BPlusDataNode *)data)->num_keys <MAX_DATA_KEYS)
   {
     insert_record_in_node(data, (Record *)record, &metadata->schema);
     BF_Block_SetDirty(block);
@@ -151,6 +151,13 @@ int bplus_record_insert(const int file_desc, BPlusMeta *metadata, const Record *
   }
 
   // αν δεν εχουμε χώρο
+  int res=split_datanode(file_desc, metadata,correct_node_id, record );
+  if(res=-1){
+    printf("Existing record id\n");
+    return 0;
+  }
+  
+
   return 0;
 }
 
