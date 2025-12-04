@@ -161,6 +161,13 @@ int bplus_record_insert(const int file_desc, BPlusMeta *metadata, const Record *
     return -1;
   }
   
+  int insert_block_id;
+  if(key<split_key){
+    insert_block_id=correct_node_id;
+  }
+  else{
+    insert_block_id= new_block_id;
+  } 
   
 
   return 0;
