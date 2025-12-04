@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+
 #define CALL_BF(call)         \
   {                           \
     BF_ErrorCode code = call; \
@@ -146,7 +148,12 @@ int bplus_record_insert(const int file_desc, BPlusMeta *metadata, const Record *
   // αν έχουμε χώρο
   if (((BPlusDataNode *)data)->num_keys <MAX_DATA_KEYS)
   {
-    insert_record_in_node(data, (Record *)record, &metadata->schema);
+    if((insert_record_in_node(data, (Record *)record, &metadata->schema))==-1){
+      printf("Existing record id\n");
+      CALL_BF(BF_UnpinBlock(block));
+      BF_Block_Destroy(&block);
+      return -1;
+    }
     BF_Block_SetDirty(block);
     CALL_BF(BF_UnpinBlock(block));
     BF_Block_Destroy(&block);
@@ -155,6 +162,8 @@ int bplus_record_insert(const int file_desc, BPlusMeta *metadata, const Record *
 
   // αν δεν εχουμε χώρο
   int split_key;
+  CALL_BF(BF_UnpinBlock(block));
+  BF_Block_Destroy(&block);
   int new_block_id=split_datanode(file_desc, metadata,correct_node_id, record,&split_key);
   if(new_block_id==-1){
     printf("Existing record id\n");
@@ -170,7 +179,8 @@ int bplus_record_insert(const int file_desc, BPlusMeta *metadata, const Record *
   } 
   
 
-  return 0;
+  insert_into_parent(file_desc, metadata, correct_node_id, new_block_id, split_key);
+  return insert_block_id;
 }
 
 int bplus_record_find(const int file_desc, const BPlusMeta *metadata, const int key, Record **out_record)

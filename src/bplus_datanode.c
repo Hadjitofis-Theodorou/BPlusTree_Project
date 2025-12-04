@@ -1,6 +1,6 @@
 // Μπορείτε να προσθέσετε εδώ βοηθητικές συναρτήσεις για την επεξεργασία Κόμβων toy Ευρετηρίου.
 #include "../include/bplus_datanode.h"
-
+#include <stdio.h>
 #include "../include/bplus_file_structs.h"
 #define CALL_BF(call)             \
     {                             \
@@ -56,7 +56,7 @@ int find_correct_node(BPlusMeta *metadata, int fd, int key, int *node_block_id)
 }
 
 // όπως από τις διαφάνειες, εισαγωγή εγγραφής διατηρώντας τη ταξινόμηση
-void insert_record_in_node(BPlusDataNode *node, Record *record, TableSchema *schema)
+int insert_record_in_node(BPlusDataNode *node, Record *record, TableSchema *schema)
 {
     int record_key = record_get_key(schema, record);
     int i = node->num_keys - 1;
@@ -64,7 +64,13 @@ void insert_record_in_node(BPlusDataNode *node, Record *record, TableSchema *sch
     while (i >= 0)
     {
         int current_key = record_get_key(schema, &node->record[i]);
-        if (current_key <= record_key)
+        if(current_key==record_key)
+        {
+           
+            return -1;
+
+        }
+        if (current_key < record_key)
         {
             break;
         }
@@ -74,6 +80,7 @@ void insert_record_in_node(BPlusDataNode *node, Record *record, TableSchema *sch
 
     node->record[i + 1] = *record;
     node->num_keys++;
+    return 0;
 }
 
 int split_datanode(int file_desc, BPlusMeta *metadata, int old_node_id, const Record *record, int *split_key)
@@ -141,6 +148,7 @@ int split_datanode(int file_desc, BPlusMeta *metadata, int old_node_id, const Re
     new_data->next_leaf = ((BPlusDataNode *)data)->next_leaf;
     ((BPlusDataNode *)data)->next_leaf = new_block_id;
     new_data->parent=((BPlusDataNode *)data)->parent;
+    *split_key = record_get_key(&metadata->schema, &new_data->record[0]);//moved it here
 
     BF_Block_SetDirty(block);
     BF_Block_SetDirty(new_block);
@@ -149,7 +157,7 @@ int split_datanode(int file_desc, BPlusMeta *metadata, int old_node_id, const Re
     BF_Block_Destroy(&block);
     BF_Block_Destroy(&new_block);
 
-    *split_key = record_get_key(&metadata->schema, &new_data->record[0]);
+    
 
 
 

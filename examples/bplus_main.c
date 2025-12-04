@@ -31,7 +31,7 @@ int main() {
   const TableSchema employee_schema = employee_get_schema();
   insert_records(employee_schema, employee_random_record, "employees.db");
   search_records(employee_schema, employee_random_record, "employees.db");
-
+  printf("We are now testing with Students!\n");
   // ===== Student test =====
   const TableSchema student_schema = student_get_schema();
   insert_records(student_schema, student_random_record, "students.db");

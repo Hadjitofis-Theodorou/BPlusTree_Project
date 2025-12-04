@@ -56,7 +56,7 @@ int split_indexnode(int file_desc, int old_index_id,int new_key, int new_right_p
         temp_keys[i+1]=temp_keys[i];
 
     }
-    for(int i=total_keys-1;i>pos;i++){
+    for(int i=total_keys-1;i>pos;i--){
         temp_pointers[i+1]=temp_pointers[i];
     }
     temp_keys[pos]=new_key;
@@ -124,7 +124,7 @@ int split_indexnode(int file_desc, int old_index_id,int new_key, int new_right_p
             ((BPlusDataNode*)child_data)->parent=old_index_id;
         }
         else{
-            ((BPlusDataNode*)child_data)->parent=old_index_id;
+            ((BPlusIndexNode*)child_data)->parent=old_index_id;
         }
         BF_Block_SetDirty(child_block);
         CALL_BF(BF_UnpinBlock(child_block));

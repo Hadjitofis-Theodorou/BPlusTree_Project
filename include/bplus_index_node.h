@@ -19,4 +19,6 @@ typedef struct BPlusIndexNode {
 
 void indexnode_init(BPlusIndexNode* node);
 int choose_child(BPlusIndexNode* node, int key);
+int insert_into_parent(int file_desc, BPlusMeta *metadata, int left_id, int right_id, int key);
+int split_indexnode(int file_desc, int old_index_id,int new_key, int new_right_ptr, int *promoted_key, int *new_block_id);
 #endif
