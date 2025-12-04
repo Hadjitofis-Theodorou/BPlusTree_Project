@@ -1,6 +1,8 @@
 #ifndef BP_INDEX_NODE_H
 #define BP_INDEX_NODE_H
 #include "bf.h"
+#include "bplus_file_structs.h"
+#include"bplus_datanode.h"
 #define PTR_SIZE sizeof(int)
 #define KEY_SIZE sizeof(int)
 #define MAX_INDEX_KEYS ((BF_BLOCK_SIZE - 4*sizeof(int)) / (KEY_SIZE +PTR_SIZE))

@@ -2,7 +2,7 @@
 #define BP_DATANODE_H
 #include "record.h"
 #include "bplus_file_structs.h"
-
+#include"bplus_index_node.h"
 #define PTR_SIZE sizeof(int)
 #define MAX_DATA_KEYS ((BF_BLOCK_SIZE - 4*sizeof(int)) / sizeof(Record))
 /* Στο αντίστοιχο αρχείο .h μπορείτε να δηλώσετε τις συναρτήσεις
