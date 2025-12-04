@@ -185,7 +185,7 @@ int bplus_record_find(const int file_desc, const BPlusMeta *metadata, const int 
   int leaf_block_id;
 
   //Δεν μπορεσαμε να βρουμε φύλλο
-  if (find_correct_node((BPlusMeta *)metadata, file_desc, key, &leaf_block_id) != 0)
+  if (find_correct_node((BPlusMeta *)metadata, file_desc, key, &leaf_block_id)!= 0)
   {
     return -1;
   }
@@ -196,7 +196,7 @@ int bplus_record_find(const int file_desc, const BPlusMeta *metadata, const int 
   void *data=BF_Block_GetData(block);
   BPlusDataNode* node = (BPlusDataNode*)data;
   
-  //has to be a leaf
+  
   if(!node->is_leaf){
     CALL_BF(BF_UnpinBlock(block));
     BF_Block_Destroy(&block);
@@ -205,10 +205,9 @@ int bplus_record_find(const int file_desc, const BPlusMeta *metadata, const int 
   for(int i=0;i<node->num_keys;i++){
     int curr_key=record_get_key(&metadata->schema,&node->record[i]);
     
-    //found the key
     if(curr_key==key){
       Record *ret=malloc(sizeof(Record));
-      //malloc failed
+     
       if(ret==NULL){
         CALL_BF(BF_UnpinBlock(block));
         BF_Block_Destroy(&block);
@@ -221,12 +220,11 @@ int bplus_record_find(const int file_desc, const BPlusMeta *metadata, const int 
       BF_Block_Destroy(&block);
       return 0;
     }
-    //break if we are past the possible position
+
     if(curr_key>key){
       break;
     }
   }
-    //not found:(
   CALL_BF(BF_UnpinBlock(block));
   BF_Block_Destroy(&block);
   *out_record=NULL;
