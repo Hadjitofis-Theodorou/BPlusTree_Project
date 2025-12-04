@@ -15,7 +15,7 @@
 
 int bplus_create_file(const TableSchema *schema, const char *fileName)
 {
-  if (schema == NULL || fileName == NULL)
+  if (schema == NULL || fileName== NULL)
     return -1;
   int fd;
   BF_Block *block;
@@ -45,7 +45,7 @@ int bplus_create_file(const TableSchema *schema, const char *fileName)
 int bplus_open_file(const char *fileName, int *file_desc, BPlusMeta **metadata)
 {
   if (fileName == NULL || file_desc == NULL || metadata == NULL)
-    return -1;
+    {return -1; }
   int fd;
   BF_Block *block;
   CALL_BF(BF_OpenFile(fileName, &fd));
@@ -79,6 +79,9 @@ int bplus_open_file(const char *fileName, int *file_desc, BPlusMeta **metadata)
 
 int bplus_close_file(const int file_desc, BPlusMeta *metadata)
 {
+  if(metadata==NULL){
+    return -1;
+  }
   int fd = file_desc;
   BF_Block *block;
   BF_Block_Init(&block);
@@ -117,7 +120,7 @@ int bplus_record_insert(const int file_desc, BPlusMeta *metadata, const Record *
     CALL_BF(BF_UnpinBlock(block));
     BF_Block_Destroy(&block);
 
-    return 0;
+    return new_node_id;
   }
 
   // βρίσκω το σωστο block/node
@@ -147,16 +150,17 @@ int bplus_record_insert(const int file_desc, BPlusMeta *metadata, const Record *
     BF_Block_SetDirty(block);
     CALL_BF(BF_UnpinBlock(block));
     BF_Block_Destroy(&block);
-    return 0;
+    return correct_node_id;
   }
 
   // αν δεν εχουμε χώρο
-  int *split_key=NULL;
+  int split_key;
   int new_block_id=split_datanode(file_desc, metadata,correct_node_id, record,&split_key);
   if(new_block_id==-1){
     printf("Existing record id\n");
-    return 0;
+    return -1;
   }
+  
   
 
   return 0;

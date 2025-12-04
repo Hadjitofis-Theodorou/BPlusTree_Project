@@ -10,7 +10,7 @@
             return -1;            \
         }                         \
     }
-// WHATS GOING ON??????--->bplus_ERROR
+
 
 void datanode_init(BPlusDataNode *node)
 {
@@ -34,8 +34,8 @@ int find_correct_node(BPlusMeta *metadata, int fd, int key, int *node_block_id)
     {
         CALL_BF(BF_GetBlock(fd, current_block_id, block));
 
-        void *data = BF_Block_GetData(block);
-        if (*((int *)data) == 1)
+        BPlusDataNode *data =(BPlusDataNode *) BF_Block_GetData(block);
+        if (data->is_leaf == 1)
         {
             *node_block_id = current_block_id;
             CALL_BF(BF_UnpinBlock(block));
@@ -44,7 +44,7 @@ int find_correct_node(BPlusMeta *metadata, int fd, int key, int *node_block_id)
             return 0;
         }
 
-        BPlusIndexNode *index_node = (BPlusIndexNode *)data; // θέλει typecast?
+        BPlusIndexNode *index_node = (BPlusIndexNode *)data; 
         int next_node_block_id = choose_child(index_node, key);
         CALL_BF(BF_UnpinBlock(block));
 
@@ -100,7 +100,13 @@ int split_datanode(int file_desc, BPlusMeta *metadata, int old_node_id, const Re
         int current_key = record_get_key(&metadata->schema, &((BPlusDataNode *)data)->record[i]);
         //απορριψη σε περιπτωση που υπαρχει ηδη
         if(key==current_key)
-            {return -1;}
+            {
+                BF_Block_SetDirty(block);
+                CALL_BF(BF_UnpinBlock(block));
+                BF_Block_Destroy(&block);
+                CALL_BF( BF_UnpinBlock(new_block));
+                BF_Block_Destroy( &new_block);
+                return -1;}
         if (key < current_key && insert_flag == 0)
         {
             temp[i] = *record;
@@ -118,13 +124,13 @@ int split_datanode(int file_desc, BPlusMeta *metadata, int old_node_id, const Re
 
     int split = (total_keys + 1) / 2;
     ((BPlusDataNode *)data)->num_keys = 0;
-    for (int i = 0; i < split; i++)
+    for (int i = 0; i < split-1; i++)
     {
         ((BPlusDataNode *)data)->record[i] = temp[i];
         ((BPlusDataNode *)data)->num_keys++;
     }
 
-    for (int i = split; i < total_keys; i++)
+    for (int i = split-1; i < total_keys; i++)
     {
         ((BPlusDataNode *)new_data)->record[new_data->num_keys] = temp[i];
         new_data->num_keys++;
@@ -133,6 +139,7 @@ int split_datanode(int file_desc, BPlusMeta *metadata, int old_node_id, const Re
     // ναι βαρεθηκαμε να κανουμε typecast από πριν το ((BPlusDataNode *)data)
     new_data->next_leaf = ((BPlusDataNode *)data)->next_leaf;
     ((BPlusDataNode *)data)->next_leaf = new_block_id;
+    new_data->parent=((BPlusDataNode *)data)->parent;
 
     BF_Block_SetDirty(block);
     BF_Block_SetDirty(new_block);
@@ -142,5 +149,9 @@ int split_datanode(int file_desc, BPlusMeta *metadata, int old_node_id, const Re
     BF_Block_Destroy(&new_block);
 
     *split_key = record_get_key(&metadata->schema, &new_data->record[0]);
+
+
+
+
     return new_block_id;
 }

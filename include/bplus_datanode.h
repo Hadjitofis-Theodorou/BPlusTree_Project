@@ -4,7 +4,7 @@
 #include "bplus_file_structs.h"
 
 #define PTR_SIZE sizeof(int)
-#define MAX_DATA_KEYS ((BF_BLOCK_SIZE - sizeof(int)) / sizeof(Record))
+#define MAX_DATA_KEYS ((BF_BLOCK_SIZE - 4*sizeof(int)) / sizeof(Record))
 /* Στο αντίστοιχο αρχείο .h μπορείτε να δηλώσετε τις συναρτήσεις
  * και τις δομές δεδομένων που σχετίζονται με τους Κόμβους Δεδομένων.*/
 

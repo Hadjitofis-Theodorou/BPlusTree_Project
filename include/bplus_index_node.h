@@ -3,7 +3,7 @@
 #include "bf.h"
 #define PTR_SIZE sizeof(int)
 #define KEY_SIZE sizeof(int)
-#define MAX_INDEX_KEYS ((BF_BLOCK_SIZE - sizeof(int)) / (KEY_SIZE +PTR_SIZE))
+#define MAX_INDEX_KEYS ((BF_BLOCK_SIZE - 4*sizeof(int)) / (KEY_SIZE +PTR_SIZE))
 /* Στο αντίστοιχο αρχείο .h μπορείτε να δηλώσετε τις συναρτήσεις
  * και τις δομές δεδομένων που σχετίζονται με τους Κόμβους Δεδομένων.*/
 typedef struct BPlusIndexNode {
